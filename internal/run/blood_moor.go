@@ -4,8 +4,8 @@ import (
 	"github.com/hectorgimenez/d2go/pkg/data"
 	"github.com/hectorgimenez/d2go/pkg/data/area"
 	"github.com/hectorgimenez/koolo/internal/action"
-    "github.com/hectorgimenez/koolo/internal/context"
-    "github.com/hectorgimenez/koolo/internal/config"
+	"github.com/hectorgimenez/koolo/internal/context"
+	"github.com/hectorgimenez/koolo/internal/config"
 )
 
 type BloodMoor struct {
@@ -30,9 +30,9 @@ func (b BloodMoor) Run() error {
     openChests := b.ctx.CharacterCfg.Game.BloodMoor.OpenChests
 
     // Less issues finding the waypoint than the town's exit
-	if err := action.WayPoint(area.ColdPlains); err != nil {
-		return err
-	}
+    if err := action.WayPoint(area.ColdPlains); err != nil {
+    	return err
+    }
 	
 	// Buff before we start
     action.Buff()
@@ -66,7 +66,7 @@ func (b BloodMoor) Run() error {
         return err
     }
 
-	return nil
+    return nil
 }
 
 func GetMonsterFilter(b BloodMoor) data.MonsterFilter {

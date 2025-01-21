@@ -135,11 +135,11 @@ type CharacterCfg struct {
 		CreateLobbyGames       bool                  `yaml:"createLobbyGames"`
 		PublicGameCounter      int                   `yaml:"-"`
 		BloodMoor struct {
-        	ClearDenOfEvil        bool `yaml:"clearDenOfEvil"`
-        	OpenChests            bool `yaml:"openChests"`
-        	FocusOnElitePacks     bool `yaml:"focusOnElitePacks"`
-        	OnlyClearDenOfEvil    bool `yaml:"onlyClearDenOfEvil"`
-        } `yaml:"blood_moor"`
+			ClearDenOfEvil        bool `yaml:"clearDenOfEvil"`
+			OpenChests            bool `yaml:"openChests"`
+			FocusOnElitePacks     bool `yaml:"focusOnElitePacks"`
+			OnlyClearDenOfEvil    bool `yaml:"onlyClearDenOfEvil"`
+		} `yaml:"blood_moor"`
 		Pindleskin             struct {
 			SkipOnImmunities []stat.Resist `yaml:"skipOnImmunities"`
 		} `yaml:"pindleskin"`
