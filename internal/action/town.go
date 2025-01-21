@@ -4,6 +4,7 @@ import (
 	"github.com/hectorgimenez/d2go/pkg/data/skill"
 	"github.com/hectorgimenez/koolo/internal/action/step"
 	"github.com/hectorgimenez/koolo/internal/context"
+	"github.com/hectorgimenez/koolo/internal/utils"
 )
 
 func PreRun(firstRun bool) error {
@@ -95,6 +96,7 @@ func InRunReturnTownRoutine() error {
 	ReviveMerc()
 	HireMerc()
 	Repair()
-
-	return UsePortalInTown()
+    UsePortalInTown()
+    utils.Sleep(500)
+	return OpenTPIfLeader()
 }
