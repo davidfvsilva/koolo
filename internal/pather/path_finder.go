@@ -250,3 +250,21 @@ func (pf *PathFinder) GetClosestWalkablePathFrom(from, dest data.Position) (Path
 
 	return nil, 0, false
 }
+
+func (pf *PathFinder) findNearbyWalkablePosition(target data.Position) (data.Position, bool) {
+	// Search in expanding squares around the target position
+	for radius := 1; radius <= 4; radius++ {
+		for x := -radius; x <= radius; x++ {
+			for y := -radius; y <= radius; y++ {
+				if x == 0 && y == 0 {
+					continue
+				}
+				pos := data.Position{X: target.X + x, Y: target.Y + y}
+				if pf.data.AreaData.IsWalkable(pos) {
+					return pos, true
+				}
+			}
+		}
+	}
+	return data.Position{}, false
+}

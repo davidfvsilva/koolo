@@ -2,21 +2,21 @@ package step
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/hectorgimenez/d2go/pkg/data"
-	"github.com/hectorgimenez/d2go/pkg/data/area"
 	"github.com/hectorgimenez/d2go/pkg/data/mode"
 	"github.com/hectorgimenez/d2go/pkg/data/object"
+	"github.com/hectorgimenez/d2go/pkg/data/state"
 	"github.com/hectorgimenez/koolo/internal/context"
 	"github.com/hectorgimenez/koolo/internal/game"
-	"github.com/hectorgimenez/koolo/internal/town"
 	"github.com/hectorgimenez/koolo/internal/ui"
 	"github.com/hectorgimenez/koolo/internal/utils"
 )
 
 const (
-	maxInteractionAttempts = 5
+	maxInteractionAttempts = 10
 	portalSyncDelay        = 200
 	maxPortalSyncAttempts  = 15
 )
