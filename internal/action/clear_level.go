@@ -73,8 +73,7 @@ func moveToRoomPosition(room data.Room) error {
 	}
 
 	// For room clearing, use larger radius bounded by room size
-	maxRadius := min(room.Width/2, room.Height/2)
-	if walkablePoint, found := ctx.PathFinder.FindNearbyWalkablePosition(center, maxRadius); found {
+	if walkablePoint, found := ctx.PathFinder.FindNearbyWalkablePosition(center); found {
 		if err := MoveToCoords(walkablePoint); err == nil {
 			return nil
 		}
