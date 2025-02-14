@@ -14,9 +14,9 @@ type Path []data.Position
 var (
 	// Path cache with LRU eviction policy
 	pathCache    = make(map[string]Path)
-	cacheOrder   []string          // Maintains access order for LRU eviction
-	cacheLock    sync.RWMutex      // Protects concurrent access to cache
-	maxCacheSize = 100             // Maximum number of paths to cache
+	cacheOrder   []string     // Maintains access order for LRU eviction
+	cacheLock    sync.RWMutex // Protects concurrent access to cache
+	maxCacheSize = 100        // Maximum number of paths to cache
 )
 
 // Generates unique cache key based on positions and area

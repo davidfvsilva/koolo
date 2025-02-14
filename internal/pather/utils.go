@@ -45,7 +45,7 @@ func (pf *PathFinder) FindNearbyWalkablePosition(target data.Position) (data.Pos
 	walkablePosLock.RUnlock()
 
 	// Search in expanding squares around target position
-	for radius := 1; radius <= 3; radius++ {
+	for radius := 1; radius <= 4; radius++ {
 		for x := -radius; x <= radius; x++ {
 			for y := -radius; y <= radius; y++ {
 				if x == 0 && y == 0 {
@@ -172,8 +172,8 @@ func (pf *PathFinder) gameCoordsToScreenCords(playerX, playerY, destinationX, de
 	diffY := destinationY - playerY
 	// Transform cartesian movement (World) to isometric (screen)
 	// Helpful documentation: https://clintbellanger.net/articles/isometric_math/
-	screenX := int((float32(diffX-diffY)*19.8)+float32(pf.gr.GameAreaSizeX/2))
-	screenY := int((float32(diffX+diffY)*9.9)+float32(pf.gr.GameAreaSizeY/2))
+	screenX := int((float32(diffX-diffY) * 19.8) + float32(pf.gr.GameAreaSizeX/2))
+	screenY := int((float32(diffX+diffY) * 9.9) + float32(pf.gr.GameAreaSizeY/2))
 	return screenX, screenY
 }
 
@@ -195,7 +195,7 @@ func DistanceFromPoint(from data.Position, to data.Position) int {
 	return int(math.Sqrt(first + second))
 }
 
-// Check if there's unobstructed path between two points 
+// Check if there's unobstructed path between two points
 func (pf *PathFinder) LineOfSight(origin data.Position, destination data.Position) bool {
 	// Pre-calculate door collision boxes
 	var doorBoxes []struct {

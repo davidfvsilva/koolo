@@ -17,7 +17,7 @@ var (
 		{0, -1}, // Up
 		{-1, 0}, // Left
 	}
-	
+
 	// All possible movement directions including diagonals
 	allDirections = []data.Position{
 		{0, 1},   // Down
@@ -125,9 +125,9 @@ func updateNeighbors(grid *game.Grid, node *Node, directions []data.Position, ne
 
 // Define movement cost for different collision types
 var tileCost = map[game.CollisionType]int{
-	game.CollisionTypeWalkable:    1,  // Walkable
-	game.CollisionTypeMonster:     16, 
-	game.CollisionTypeObject:      4,  // Soft blocker
+	game.CollisionTypeWalkable:    1, // Walkable
+	game.CollisionTypeMonster:     16,
+	game.CollisionTypeObject:      4, // Soft blocker
 	game.CollisionTypeLowPriority: 20,
 	game.CollisionTypeNonWalkable: math.MaxInt32, // Completely block non-walkable
 }

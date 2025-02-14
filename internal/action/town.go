@@ -77,6 +77,7 @@ func InRunReturnTownRoutine() error {
 		return fmt.Errorf("failed to verify town location after portal")
 	}
 
+	ReturnTown()
 	step.SetSkill(skill.Vigor)
 	RecoverCorpse()
 	ManageBelt()

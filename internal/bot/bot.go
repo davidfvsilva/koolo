@@ -175,7 +175,6 @@ func (b *Bot) Run(ctx context.Context, firstRun bool, runs []run.Run) error {
 
 					if err = action.InRunReturnTownRoutine(); err != nil {
 						b.ctx.Logger.Warn("Failed returning town.. will try again shortly", "error", err)
-						time.Sleep(500 * time.Millisecond)
 					}
 				}
 				b.ctx.SwitchPriority(botCtx.PriorityNormal)

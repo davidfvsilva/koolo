@@ -137,7 +137,10 @@ func (a Cows) getWirtsLeg() error {
 	if !found {
 		return errors.New("tristram not found")
 	}
-	err = action.InteractObject(portal, nil)
+	err = action.InteractObject(portal, func() bool {
+		return a.ctx.Data.AreaData.Area == area.Tristram && a.ctx.Data.AreaData.IsInside(a.ctx.Data.PlayerUnit.Position)
+	})
+
 	if err != nil {
 		return err
 	}
