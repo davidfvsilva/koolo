@@ -467,7 +467,7 @@ func CubeRecipes() error {
 
 		continueProcessing := true
 		for continueProcessing {
-			if items, hasItems := hasItemsForRecipe(ctx, itemsInStash, recipe); hasItems {
+			if items, hasItems := hasItemsForRecipe(ctx, recipe); hasItems {
 
 				// TODO: Check if we have the items in our storage and if not, purchase them, else take the item from the storage
 				if recipe.PurchaseRequired {
@@ -496,7 +496,7 @@ func CubeRecipes() error {
 					return err
 				}
 
-				// Get a list of items that are in our invetory
+				// Get a list of items that are in our inventory
 				itemsInInv := ctx.Data.Inventory.ByLocation(item.LocationInventory)
 
 				stashingRequired := false
@@ -509,7 +509,7 @@ func CubeRecipes() error {
 						if item.Name == "Key" {
 							continue
 						}
-						
+
 						shouldStash, reason, _ := shouldStashIt(item, false)
 
 						if shouldStash {
@@ -563,8 +563,10 @@ func CubeRecipes() error {
 	return nil
 }
 
-func hasItemsForRecipe(ctx *context.Status, items []data.Item, recipe CubeRecipe) ([]data.Item, bool) {
+func hasItemsForRecipe(ctx *context.Status, recipe CubeRecipe) ([]data.Item, bool) {
 
+	ctx.RefreshGameData()
+	items := ctx.Data.Inventory.ByLocation(item.LocationStash, item.LocationSharedStash)
 	// Special handling for "Reroll GrandCharms" recipe
 	if recipe.Name == "Reroll GrandCharms" {
 		return hasItemsForGrandCharmReroll(ctx, items)
