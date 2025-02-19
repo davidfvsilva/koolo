@@ -2,6 +2,7 @@ package action
 
 import (
 	"fmt"
+	"log"
 	"log/slog"
 
 	"github.com/hectorgimenez/koolo/internal/pather"
@@ -17,8 +18,42 @@ import (
 	"github.com/hectorgimenez/koolo/internal/game"
 )
 
+const (
+	maxAreaSyncAttempts = 10
+	areaSyncDelay       = 100 * time.Millisecond
+)
+
+func ensureAreaSync(ctx *context.Status, expectedArea area.ID) error {
+	log.Printf("DEBUG: Starting area sync (expected: %d, current: %d)", expectedArea, ctx.Data.PlayerUnit.Area)
+	// Skip sync check if we're already in the expected area and have valid area data
+	if ctx.Data.PlayerUnit.Area == expectedArea {
+		if areaData, ok := ctx.Data.Areas[expectedArea]; ok && areaData.IsInside(ctx.Data.PlayerUnit.Position) {
+			return nil
+		}
+	}
+
+	// Wait for area data to sync
+	for attempts := 0; attempts < maxAreaSyncAttempts; attempts++ {
+		log.Printf("DEBUG: Area sync attempt %d/%d", attempts+1, maxAreaSyncAttempts)
+		ctx.RefreshGameData()
+
+		if ctx.Data.PlayerUnit.Area == expectedArea {
+			if areaData, ok := ctx.Data.Areas[expectedArea]; ok {
+				if areaData.IsInside(ctx.Data.PlayerUnit.Position) {
+					return nil
+				}
+			}
+		}
+
+		time.Sleep(areaSyncDelay)
+	}
+
+	return fmt.Errorf("area sync timeout - expected: %v, current: %v", expectedArea, ctx.Data.PlayerUnit.Area)
+}
+
 func MoveToArea(dst area.ID) error {
 	ctx := context.Get()
+	log.Printf("INFO: Moving to area %d from %d", dst, ctx.Data.PlayerUnit.Area)
 	ctx.SetLastAction("MoveToArea")
 
 	// Exception for Arcane Sanctuary
@@ -86,7 +121,9 @@ func MoveToArea(dst area.ID) error {
 		return lvl.Position, true
 	}
 
-	if err := MoveTo(toFun); err != nil {
+	err := MoveTo(toFun)
+	if err != nil {
+		log.Printf("WARN: Movement error to area %d: %v", dst, err)
 		ctx.Logger.Warn("error moving to area, will try to continue", slog.String("error", err.Error()))
 	}
 
@@ -101,6 +138,13 @@ func MoveToArea(dst area.ID) error {
 }
 
 func MoveToCoords(to data.Position) error {
+	ctx := context.Get()
+	log.Printf("DEBUG: Moving to coordinates %d:%d in area %d", to.X, to.Y, ctx.Data.PlayerUnit.Area)
+
+	if err := ensureAreaSync(ctx, ctx.Data.PlayerUnit.Area); err != nil {
+		return err
+	}
+
 	return MoveTo(func() (data.Position, bool) {
 		return to, true
 	})
@@ -133,6 +177,7 @@ func MoveTo(toFun func() (data.Position, bool)) error {
 
 		// If we can teleport, don't bother with the rest
 		if ctx.Data.CanTeleport() {
+			log.Printf("DEBUG: Executing final movement step")
 			return step.MoveTo(to)
 		}
 
@@ -155,6 +200,7 @@ func MoveTo(toFun func() (data.Position, bool)) error {
 		// Check if there is any object blocking our path
 		for _, o := range ctx.Data.Objects {
 			if o.Name == object.Barrel && ctx.PathFinder.DistanceFromMe(o.Position) < 3 {
+				log.Printf("DEBUG: Found barrel at %d:%d", o.Position.X, o.Position.Y)
 				err := step.InteractObject(o, func() bool {
 					obj, found := ctx.Data.Objects.FindByID(o.ID)
 					//additional click on barrel to avoid getting stuck
@@ -177,7 +223,14 @@ func MoveTo(toFun func() (data.Position, bool)) error {
 		minDistanceForElites := 20                                            // This will make the character to kill elites even if they are far away, ONLY during leveling
 		stuck := ctx.PathFinder.DistanceFromMe(previousIterationPosition) < 5 // Detect if character was not able to move from last iteration
 
+		log.Printf("DEBUG: Checking %d nearby monsters", len(ctx.Data.Monsters.Enemies()))
 		for _, m := range ctx.Data.Monsters.Enemies() {
+			log.Printf("DEBUG: Monster %d at %d:%d (life: %d%%)",
+				m.Name,
+				m.Position.X,
+				m.Position.Y,
+				m.Stats[stat.Life],
+			)
 			// Skip if monster is already dead
 			if m.Stats[stat.Life] <= 0 {
 				continue
@@ -227,7 +280,7 @@ func MoveTo(toFun func() (data.Position, bool)) error {
 		}
 
 		// Continue moving
-		// WaitForAllMembersWhenLeveling()
+		WaitForAllMembersWhenLeveling() // function being called from leveling_tools.go
 		previousIterationPosition = ctx.Data.PlayerUnit.Position
 
 		if lastMovement {
