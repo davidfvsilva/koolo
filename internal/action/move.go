@@ -2,11 +2,11 @@ package action
 
 import (
 	"fmt"
-	"log"
-	"log/slog"
-
 	"github.com/hectorgimenez/koolo/internal/pather"
 	"github.com/hectorgimenez/koolo/internal/utils"
+	"log"
+	"log/slog"
+	"time"
 
 	"github.com/hectorgimenez/d2go/pkg/data"
 	"github.com/hectorgimenez/d2go/pkg/data/area"
